@@ -1,0 +1,30 @@
+python -m venv env
+
+env/Scripts/activate
+
+pip install fastapi
+
+pip install "fastapi[standard]"
+
+
+or: pip install uvicorn
+
+
+fastapi --help
+
+fastapi dev
+fastapi dev main.py
+
+
+// When Using the new structure
+fastapi dev src/
+
+pip freeze > requirements.txt
+
+psql 'postgresql://neondb_owner:npg_8JDGLEIKH3nr@ep-small-rain-a115is8r-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
+
+pip install asyncpg
+
+pip install pydantic-settings
+
+pip install sqlmodel
