@@ -30,3 +30,5 @@ pip install pydantic-settings
 pip install sqlmodel
 
 pip install alembic
+
+alembic init -t async migrations
