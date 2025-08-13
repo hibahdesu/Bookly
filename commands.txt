@@ -36,3 +36,9 @@ alembic init -t async migrations
 alembic revision --autogenerate -m "init"
 
 alembic upgrade head
+
+alembic revision --autogenerate -m "add password hash"
+
+alembic upgrade head
+
+pip install passlib
