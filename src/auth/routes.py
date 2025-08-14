@@ -9,6 +9,7 @@ from fastapi.responses import JSONResponse
 from datetime import timedelta
 
 
+
 auth_router = APIRouter()
 user_service = UserService()
 REFRESH_TOKEN_EXPIRY = 2
