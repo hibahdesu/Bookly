@@ -42,3 +42,5 @@ alembic revision --autogenerate -m "add password hash"
 alembic upgrade head
 
 pip install passlib
+
+pip install pyjwt
