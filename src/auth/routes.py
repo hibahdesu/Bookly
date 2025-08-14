@@ -7,7 +7,8 @@ from fastapi.exceptions import HTTPException
 from .utils import create_access_token, decode_token, verify_password
 from fastapi.responses import JSONResponse
 from datetime import timedelta
-from .dependencies import RefreshTokenBearer
+from .dependencies import RefreshTokenBearer, AccessTokenBearer
+from src.db.redis import add_jti_to_blocklist
 from datetime import datetime
 
 
@@ -93,5 +94,17 @@ async def get_new_access_token(token_details: dict = Depends(RefreshTokenBearer(
                         detail="Invalid or expired token")
 
 
-    
+@auth_router.get('/logout')
+async def revooke_token(token_details: dict=Depends(AccessTokenBearer())):
+
+    jti = token_details['jti'] 
+
+    await add_jti_to_blocklist(jti)
+
+    return JSONResponse(
+        content={
+            "message": "loged out successfully"
+        },
+        status_code=status.HTTP_200_OK
+    )
 

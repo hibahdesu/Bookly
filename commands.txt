@@ -46,3 +46,5 @@ pip install passlib
 pip install pyjwt
 
 pip install aioredis
+
+pip install setuptools
