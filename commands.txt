@@ -44,3 +44,5 @@ alembic upgrade head
 pip install passlib
 
 pip install pyjwt
+
+pip install aioredis
