@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from src.books.schemas import Book
+from src.reviews.schemas import ReviewModel
 from datetime import datetime
 from typing import List
 import uuid
@@ -19,13 +20,14 @@ class UserModel(BaseModel):
     first_name: str
     last_name: str
     is_verified: bool 
-    password_hash: str 
+    password_hash: str = Field(exclude=True)
     created_at: datetime 
     updated_at: datetime
 
 
 class UserBooksModel(UserModel):
     books: List[Book]
+    reviews: List[ReviewModel]
 
     def __repr__(self):
         return f"<User {self.username}>"
