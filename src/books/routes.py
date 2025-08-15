@@ -24,6 +24,18 @@ async def get_all_books(session: AsyncSession = Depends(get_session),
     return books
 # http://127.0.0.1:8000/books
 
+@book_router.get('/user/{user_uid}', response_model=List[Book], dependencies=[role_checker])
+async def get_user_book_submissions(
+                        user_uid: str,
+                        session: AsyncSession = Depends(get_session), 
+                        user_details=Depends(access_token_bearer),
+                        ):
+    print(user_details)
+    books = await book_service.get_user_books(user_uid, session)
+    return books
+# http://127.0.0.1:8000/api/v1/books/user/2899d9e9-d03f-4656-8aef-3ad92d3c96ae
+
+
 @book_router.post('/', status_code=status.HTTP_201_CREATED, response_model=Book, dependencies=[role_checker])
 async def create_a_book(book_data: BookCreateModel, session: AsyncSession = Depends(get_session), 
                         token_details=Depends(access_token_bearer)) -> dict:
