@@ -50,3 +50,7 @@ pip install aioredis
 pip install setuptools
 
 redis-server
+
+alembic revision --autogenerate -m 'Add roles to users'
+
+alembic upgrade head
