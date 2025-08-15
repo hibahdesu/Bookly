@@ -54,3 +54,7 @@ redis-server
 alembic revision --autogenerate -m 'Add roles to users'
 
 alembic upgrade head
+
+alembic revision --autogenerate -m 'relate users to books'
+
+alembic upgrade head
