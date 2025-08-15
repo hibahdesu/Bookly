@@ -3,7 +3,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.config import Config
-from src.books.models import Book  # Make sure Book inherits from SQLModel
+from src.db.models import Book
+
 
 # Convert sync database URL to async-compatible URL
 DATABASE_URL = Config.DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://")

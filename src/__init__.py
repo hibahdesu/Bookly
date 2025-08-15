@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from src.db.main import init_db
 from src.auth.routes import auth_router
 
+
 @asynccontextmanager
 async def life_span(app: FastAPI):
     print(f'Server is starting ...')
