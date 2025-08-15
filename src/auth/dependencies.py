@@ -1,9 +1,15 @@
 from fastapi.security import HTTPBearer
-from fastapi import Request, status
+from fastapi import Request, status, Depends
 from fastapi.security.http import HTTPAuthorizationCredentials
 from .utils import decode_token
 from fastapi.exceptions import HTTPException
 from src.db.redis import token_in_blocklist
+from sqlmodel.ext.asyncio.session import AsyncSession
+from src.db.main import get_session
+from .service import UserService
+
+
+user_service = UserService()
 
 class TokenBearer(HTTPBearer):
     
@@ -75,3 +81,11 @@ class RefreshTokenBearer(TokenBearer):
                 detail='Please provide an refresh token'
         )
 
+
+async def get_current_user(token_details: dict = Depends(AccessTokenBearer()),
+                     session: AsyncSession = Depends(get_session)):
+    user_email = token_details['user']['email']
+
+    user = await user_service.get_user_by_email(user_email, session)
+
+    return user
