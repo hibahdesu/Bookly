@@ -22,6 +22,9 @@ class UserModel(BaseModel):
     password_hash: str 
     created_at: datetime 
     updated_at: datetime
+
+
+class UserBooksModel(UserModel):
     books: List[Book]
 
     def __repr__(self):

@@ -4,7 +4,6 @@ import uuid
 from datetime import datetime
 from typing import List
 from src.books import models
-# from src.auth import models
 
 """
 class User:
