@@ -7,7 +7,7 @@ from src.books.service import BookService
 from typing import List
 from src.db.main import get_session
 from src.auth.dependencies import AccessTokenBearer, RoleChecker
-from src.errors import BookNotFound, 
+from src.errors import BookNotFound
 
 book_router = APIRouter()
 book_service = BookService()
