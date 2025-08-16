@@ -4,6 +4,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from .utils import generate_pass_hash
 from sqlmodel import select
 
+
 class UserService:
     async def get_user_by_email(self, email: str, session: AsyncSession):
         statement = select(User).where(User.email == email)
