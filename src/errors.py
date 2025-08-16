@@ -86,7 +86,8 @@ def create_exception_handler(
 
     async def exception_handler(request: Request, exc: BooklyException):
 
-        return JSONResponse(content=initial_detail, status_code=status_code)
+        return JSONResponse(content=initial_detail, 
+                            status_code=status_code)
 
     return exception_handler
 
