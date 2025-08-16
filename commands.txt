@@ -60,3 +60,9 @@ alembic revision --autogenerate -m 'relate users to books'
 alembic upgrade head
 
 alembic revision --autogenerate -m 'add review table'
+
+alembic upgrade head
+
+alembic revision --autogenerate -m 'tags'
+
+alembic upgrade head
