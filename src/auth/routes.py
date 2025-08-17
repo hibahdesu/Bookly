@@ -28,7 +28,7 @@ REFRESH_TOKEN_EXPIRY = 2
 async def send_mail(emails:EmailModel):
     emails = emails.addresses
 
-    html = "<h1>Welcome to the bookly app</h1>"
+    html = "<h1>Welcome to the bookly app</h1> <p>We are happy to have you here with us, hope you enjoy your reading.</p>"
 
     message = create_message(
         recipients=emails,
