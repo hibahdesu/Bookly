@@ -28,11 +28,73 @@ REFRESH_TOKEN_EXPIRY = 2
 async def send_mail(emails:EmailModel):
     emails = emails.addresses
 
-    html = "<h1>Welcome to the bookly app</h1> <p>We are happy to have you here with us, hope you enjoy your reading.</p>"
+    html = """
+    <html>
+    <head>
+        <style>
+            .container {
+                font-family: Arial, sans-serif;
+                padding: 20px;
+                background-color: #f9f9f9;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                max-width: 600px;
+                margin: auto;
+            }
+            h1 {
+                color: #2c3e50;
+            }
+            p {
+                font-size: 16px;
+                color: #333;
+            }
+            .button {
+                display: inline-block;
+                padding: 10px 20px;
+                margin-top: 20px;
+                font-size: 16px;
+                background-color: #3498db;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+            }
+            .footer {
+                margin-top: 30px;
+                font-size: 12px;
+                color: #888;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>📚 Welcome to Bookly!</h1>
+            <p>Thank you for joining <strong>Bookly</strong> – 
+            your go-to app for discovering and enjoying amazing books.</p>
+            
+            <p>Here's what you can do with Bookly:</p>
+            <ul>
+                <li>🔍 Explore a vast library of books</li>
+                <li>💾 Save your favorites</li>
+                <li>📝 Write reviews and connect with other readers</li>
+            </ul>
+
+            <p>We're excited to have you on board. If you ever need help, 
+            our support team is just an email away.</p>
+            
+            <a class="button" href="https://booklyapp.com" target="_blank">Start Reading</a>
+
+            <div class="footer">
+                <p>If you did not sign up for Bookly, please ignore this message.</p>
+                <p>Contact us at support@booklyapp.com</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
 
     message = create_message(
         recipients=emails,
-        subject="Welcome",
+        subject="📚 Welcome to Bookly!",
         body=html
     )
 
