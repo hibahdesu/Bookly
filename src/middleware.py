@@ -26,6 +26,16 @@ def register_middleware(app: FastAPI):
 
     @app.middleware('http')
     async def authorization(request: Request, call_next):
+        public_paths = [
+            "/api/v1/auth/signup",
+            "/api/v1/auth/login",
+            "/docs", "/openapi.json", "/redoc",  
+        ]
+
+        if request.url.path in public_paths or request.url.path.startswith("/static"):
+            return await call_next(request)
+    
+
         if not "Authorization" in request.headers:
             return JSONResponse(
                 content={

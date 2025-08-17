@@ -12,7 +12,7 @@ DATABASE_URL = Config.DATABASE_URL.replace("postgresql://", "postgresql+asyncpg:
 # Create the async engine
 engine: AsyncEngine = create_async_engine(
     url=DATABASE_URL,
-    echo=False
+    echo=True
 )
 
 # Create the async sessionmaker
