@@ -68,3 +68,5 @@ alembic revision --autogenerate -m 'tags'
 alembic upgrade head
 
 pip install fastapi-mail
+
+pip install itsdangerous

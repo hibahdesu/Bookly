@@ -4,7 +4,7 @@ from .service import UserService
 from src.db.main import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi.exceptions import HTTPException
-from .utils import create_access_token, decode_token, verify_password
+from .utils import create_access_token, decode_token, verify_password, create_url_safe_token, decode_url_safe_token
 from fastapi.responses import JSONResponse
 from datetime import timedelta
 from .dependencies import RefreshTokenBearer, AccessTokenBearer, get_current_user, RoleChecker
@@ -12,6 +12,8 @@ from src.db.redis import add_jti_to_blocklist
 from datetime import datetime
 from src.errors import UserAlreadyExists, UserNotFound, InvalidCredentials, InvalidToken
 from src.mail import mail, create_message
+from src.config import Config
+from src.db.main import get_session
 
 
 
@@ -102,7 +104,7 @@ async def send_mail(emails:EmailModel):
 
     return {"message": "Email sent successfully"}
 
-@auth_router.post('/signup', response_model=UserModel, status_code=status.HTTP_201_CREATED)
+@auth_router.post('/signup',  status_code=status.HTTP_201_CREATED)
 async def create_user_account(user_data: UserCreateModel, session: AsyncSession = Depends(get_session)):
     email = user_data.email
 
@@ -114,7 +116,118 @@ async def create_user_account(user_data: UserCreateModel, session: AsyncSession 
     
     new_user = await user_service.create_user(user_data, session)
 
-    return new_user
+    token = create_url_safe_token({"email": email})
+
+    link = f'http://{Config.DOMAIN}/api/v1/auth/verify/{token}'
+
+    html_message = f"""
+    <html>
+    <head>
+    <style>
+        .container {{
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 600px;
+            margin: auto;
+            color: #333;
+        }}
+        .content {{
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }}
+        h1 {{
+            color: #2c3e50;
+        }}
+        p {{
+            font-size: 16px;
+            line-height: 1.5;
+        }}
+        .button {{
+            display: inline-block;
+            padding: 12px 25px;
+            margin-top: 20px;
+            background-color: #3498db;
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 5px;
+        }}
+        .footer {{
+            font-size: 12px;
+            color: #888;
+            margin-top: 30px;
+            text-align: center;
+        }}
+    </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="content">
+                <h1>Verify Your Email</h1>
+                <p>Hi there,</p>
+                <p>Thanks for signing up! To complete your registration, please verify your email by clicking the button below:</p>
+                
+                <a href="{link}" class="button" target="_blank">Verify Email</a>
+
+                <p>If the button doesn't work, copy and paste the following URL into your browser:</p>
+                <p><a href="{link}" target="_blank">{link}</a></p>
+            </div>
+
+            <div class="footer">
+                <p>You received this email because you signed up for Bookly.</p>
+                <p>If you didn't sign up, please ignore this message.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+"""
+
+    
+    message = create_message(
+        recipients=[email],
+        subject="📚 Verify Your Email",
+        body=html_message
+    )
+
+    await mail.send_message(message)
+
+
+    return {
+        "message": "Account Created! Check email to verify your account",
+        "user": new_user
+    }
+
+@auth_router.get('/verify/{token}')
+async def verify_user_account(token:str, session:AsyncSession= Depends(get_session)):
+    token_data = decode_url_safe_token(token)
+
+    user_email = token_data.get('email')
+
+    if user_email:
+        user = await user_service.get_user_by_email(user_email, session)
+
+        if not user:
+            raise UserNotFound()
+        
+        await user_service.update_user(user, {'is_verified': True}, session)
+
+        return JSONResponse(content={
+            "message": "Account Verified Successfully.",
+        },
+        status_code=status.HTTP_200_OK
+        )
+    
+    return JSONResponse(content={
+        "message": "Error occured during verification"
+    },
+    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+    )
+
+
 
 @auth_router.post('/login')
 async def login_users(login_data: UserLoginModel, session: AsyncSession = Depends(get_session)):
