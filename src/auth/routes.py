@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, status
-from src.auth.schemas import UserCreateModel, UserModel, UserLoginModel, UserBooksModel, EmailModel
+from src.auth.schemas import UserCreateModel, UserModel, UserLoginModel, UserBooksModel, EmailModel, PasswordResetRequestModel
 from .service import UserService
 from src.db.main import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -316,3 +316,105 @@ async def revooke_token(token_details: dict=Depends(AccessTokenBearer())):
         status_code=status.HTTP_200_OK
     )
 
+
+
+"""
+1. provide the email -> password reset request
+2. send password reset link
+3. reset password -> password reset confirmation
+"""
+
+@auth_router.post('/password-reset-request')
+async def password_reset_request(email_data: PasswordResetRequestModel):
+    email = email_data.email
+
+    token = create_url_safe_token({"email": email})
+
+    link = f'http://{Config.DOMAIN}/api/v1/auth/password-reset-confirm/{token}'
+
+    html_message = f"""
+                <html>
+                <head>
+                <style>
+                    .container {{
+                        font-family: Arial, sans-serif;
+                        background-color: #f4f4f4;
+                        padding: 30px;
+                        border-radius: 8px;
+                        max-width: 600px;
+                        margin: auto;
+                        color: #333;
+                    }}
+                    .content {{
+                        background-color: #ffffff;
+                        padding: 20px;
+                        border-radius: 8px;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    }}
+                    h1 {{
+                        color: #2c3e50;
+                    }}
+                    p {{
+                        font-size: 16px;
+                        line-height: 1.5;
+                    }}
+                    .button {{
+                        display: inline-block;
+                        padding: 12px 25px;
+                        margin-top: 20px;
+                        background-color: #e67e22;
+                        color: #fff;
+                        text-decoration: none;
+                        font-size: 16px;
+                        border-radius: 5px;
+                    }}
+                    .footer {{
+                        font-size: 12px;
+                        color: #888;
+                        margin-top: 30px;
+                        text-align: center;
+                    }}
+                </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="content">
+                            <h1>Password Reset Request</h1>
+                            <p>Hi there,</p>
+                            <p>We received a request to reset your password for your <strong>Bookly</strong> account.</p>
+                            <p>If you made this request, click the button below to reset your password:</p>
+                            
+                            <a href="{link}" class="button" target="_blank">Reset Password</a>
+
+                            <p>If the button doesn’t work, copy and paste this URL into your browser:</p>
+                            <p><a href="{link}" target="_blank">{link}</a></p>
+
+                            <p>If you didn’t request a password reset, you can safely ignore this email.</p>
+                        </div>
+
+                        <div class="footer">
+                            <p>This message was sent by Bookly • support@booklyapp.com</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """
+
+    message = create_message(
+        recipients=[email],
+        subject="📚 Reset Your Password",
+        body=html_message
+    )
+
+    await mail.send_message(message)
+
+
+    return JSONResponse(
+        content={
+            "message": "Please check your email for instructions to reset your password"
+        },
+        status_code=status.HTTP_200_OK
+        
+    )
+        
+    
