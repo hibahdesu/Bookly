@@ -86,3 +86,5 @@ celery -A src.celery_tasks worker --loglevel=info --pool=prefork
 
 pip install flower
 
+celery -A src.celery_tasks.c_app flower
+
