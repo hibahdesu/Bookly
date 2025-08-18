@@ -45,3 +45,7 @@ class UserService:
         await session.commit()
 
         return user
+    
+    async def delete_user(self, user: User, session: AsyncSession):
+        await session.delete(user)
+        await session.commit()
