@@ -70,3 +70,7 @@ alembic upgrade head
 pip install fastapi-mail
 
 pip install itsdangerous
+
+pip install celery
+
+pip install asgiref

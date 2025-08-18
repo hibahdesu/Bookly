@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, status
-from src.auth.schemas import UserCreateModel, UserModel, UserLoginModel, UserBooksModel, EmailModel, PasswordResetRequestModel
+from src.auth.schemas import UserCreateModel, UserModel, UserLoginModel, UserBooksModel, EmailModel, PasswordResetRequestModel, PasswordResetConfirmModel
 from .service import UserService
 from src.db.main import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi.exceptions import HTTPException
-from .utils import create_access_token, decode_token, verify_password, create_url_safe_token, decode_url_safe_token
+from .utils import create_access_token, decode_token, verify_password, create_url_safe_token, decode_url_safe_token, generate_passwd_hash
 from fastapi.responses import JSONResponse
 from datetime import timedelta
 from .dependencies import RefreshTokenBearer, AccessTokenBearer, get_current_user, RoleChecker
@@ -200,6 +200,7 @@ async def create_user_account(user_data: UserCreateModel, session: AsyncSession 
         "message": "Account Created! Check email to verify your account",
         "user": new_user
     }
+
 
 @auth_router.get('/verify/{token}')
 async def verify_user_account(token:str, session:AsyncSession= Depends(get_session)):
@@ -417,4 +418,62 @@ async def password_reset_request(email_data: PasswordResetRequestModel):
         
     )
         
+
+@auth_router.post('/password-reset-confirm/{token}')
+async def reset_account_password(token:str, 
+                                 passwords: PasswordResetConfirmModel, 
+                                 session:AsyncSession= Depends(get_session)):
     
+    new_password = passwords.new_password
+
+    confirm_password = passwords.confirm_new_password
+
+    
+    if new_password != confirm_password:
+        raise HTTPException(detail="Password do not match", status_code=status.HTTP_400_BAD_REQUEST)
+    token_data = decode_url_safe_token(token)
+
+    user_email = token_data.get('email')
+
+    if user_email:
+        user = await user_service.get_user_by_email(user_email, session)
+
+        if not user:
+            raise UserNotFound()
+        
+        password_hash = generate_passwd_hash(new_password)
+        
+        await user_service.update_user(user, {'password_hash': password_hash}, session)
+
+        return JSONResponse(content={
+            "message": "Password Reset Successfully.",
+        },
+        status_code=status.HTTP_200_OK
+        )
+    
+    return JSONResponse(content={
+        "message": "Error occured during password reset."
+    },
+    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+    )
+    
+
+
+
+
+
+# @auth_router.delete('/delete-account', status_code=status.HTTP_200_OK)
+# async def delete_own_account(
+#     current_user=Depends(get_current_user),
+#     session: AsyncSession = Depends(get_session)
+# ):
+#     user = await user_service.get_user_by_email(current_user.email, session)
+
+#     if not user:
+#         raise UserNotFound()
+
+#     await user_service.delete_user(user, session)
+
+#     return JSONResponse(
+#         content={"message": "Account deleted successfully."}
+#     )

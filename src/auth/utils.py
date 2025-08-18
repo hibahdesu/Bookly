@@ -12,7 +12,7 @@ password_context = CryptContext(
 
 ACCESS_TOKEN_EXPIRY = 3600
 
-def generate_pass_hash(password: str) -> str:
+def generate_passwd_hash(password: str) -> str:
     hash = password_context.hash(password)
 
     return hash
