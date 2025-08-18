@@ -74,3 +74,15 @@ pip install itsdangerous
 pip install celery
 
 pip install asgiref
+
+celery -A src.celery_tasks.c_app worker 
+
+**or if that did not work:**
+
+celery -A src.celery_tasks worker --loglevel=info --pool=solo
+
+**For production: **
+celery -A src.celery_tasks worker --loglevel=info --pool=prefork
+
+
+
