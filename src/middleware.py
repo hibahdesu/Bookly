@@ -30,7 +30,9 @@ def register_middleware(app: FastAPI):
             "/api/v1/auth/signup",
             "/api/v1/auth/login",
             "/api/v1/auth/verify",
-            "/docs", "/openapi.json", "/redoc",  
+            "/docs", 
+            "/openapi.json", 
+            "/redoc",  
         ]
 
         if request.url.path in public_paths or request.url.path.startswith("/static"):

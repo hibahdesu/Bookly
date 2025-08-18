@@ -9,7 +9,7 @@ from src.db.main import get_session
 from .service import UserService
 from typing import List, Any
 from src.db.models import User
-from src.errors import ( InvalidToken, RevokedToken, RefreshTokenRequired, AccessTokenRequired, InsufficientPermission)
+from src.errors import ( InvalidToken, RevokedToken, RefreshTokenRequired, AccessTokenRequired, InsufficientPermission, AccountNotVerified)
 
 
 
@@ -107,6 +107,9 @@ class RoleChecker:
 
 
     def __call__(self, current_user: User = Depends(get_current_user)) -> Any:
+
+        if not current_user.is_verified:
+            raise AccountNotVerified()
 
         if current_user.role in self.allowed_roles:
             return True 
