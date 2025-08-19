@@ -465,21 +465,3 @@ async def delete_own_account(
     return JSONResponse(
         content={"message": "Account deleted successfully."}
     )
-
-
-
-# @auth_router.delete('/delete-account', status_code=status.HTTP_200_OK)
-# async def delete_own_account(
-#     current_user=Depends(get_current_user),
-#     session: AsyncSession = Depends(get_session)
-# ):
-#     user = await user_service.get_user_by_email(current_user.email, session)
-
-#     if not user:
-#         raise UserNotFound()
-
-#     await user_service.delete_user(user, session)
-
-#     return JSONResponse(
-#         content={"message": "Account deleted successfully."}
-#     )
