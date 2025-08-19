@@ -6,9 +6,7 @@ pip install fastapi
 
 pip install "fastapi[standard]"
 
-
 or: pip install uvicorn
-
 
 fastapi --help
 
@@ -107,3 +105,6 @@ or:
 schemathesis run http://localhost:8000/api/v1/openapi.json
 
 schemathesis run http://localhost:8000/api/v1/openapi.json --checks all
+
+**For production: **
+fastapi run src/
