@@ -88,3 +88,5 @@ pip install flower
 
 celery -A src.celery_tasks.c_app flower
 
+pip install pytest
+
