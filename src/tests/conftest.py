@@ -12,7 +12,7 @@ mock_user_service = Mock()
 def get_mock_session():
     yield mock_session
 
-app.dependency_overrides(get_session) = get_mock_session
+app.dependency_overrides[get_session] = get_mock_session
 
 @pytest.fixture
 def fake_session(): 
